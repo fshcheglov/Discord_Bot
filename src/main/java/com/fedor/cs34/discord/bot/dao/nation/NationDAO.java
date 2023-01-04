@@ -27,7 +27,7 @@ public class NationDAO {
         statement.setString(1, nation.nationName);
         statement.setInt(2, nation.leader.id);
         statement.setInt(3, nation.government.id);
-        statement.setInt(4, nation.economicType.id);
+        statement.setInt(4, nation.economicType.getId());
         statement.setInt(5, nation.species.id);
         statement.setString(6, nation.ownerID);
         statement.setInt(7, nation.development.resourcePoints);

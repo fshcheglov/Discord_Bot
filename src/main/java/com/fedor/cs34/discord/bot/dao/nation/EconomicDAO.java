@@ -1,7 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
 import com.fedor.cs34.discord.bot.data.nation.EconomicType;
-import com.fedor.cs34.discord.bot.data.nation.Government;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,7 +19,7 @@ public class EconomicDAO {
     public List<EconomicType> getAll() throws SQLException {
         var result = new ArrayList<EconomicType>();
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM leader");
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM economy");
 
         while (resultSet.next()) {
             result.add(createFromResultSet(resultSet));
@@ -52,9 +51,9 @@ public class EconomicDAO {
         }
     }
 
-    static EconomicType createFromResultSet(ResultSet resultSet) throws SQLException {
+    private static EconomicType createFromResultSet(ResultSet resultSet) throws SQLException {
         var id = resultSet.getInt("id");
         var name = resultSet.getString("name");
-        return new EconomicType(name, id);
+        return new EconomicType(id, name);
     }
 }
