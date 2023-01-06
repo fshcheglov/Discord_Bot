@@ -1,5 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.system.StarType;
 
 import java.sql.Connection;
@@ -13,8 +14,8 @@ import java.util.Random;
 public class StarTypeDAO {
     private final Connection connection;
 
-    public StarTypeDAO(Connection connection) {
-        this.connection = connection;
+    public StarTypeDAO(DataAccess dataAccess) {
+        this.connection = dataAccess.connection;
     }
 
     public List<StarType> getAll() throws SQLException {

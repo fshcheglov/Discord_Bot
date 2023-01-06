@@ -58,7 +58,7 @@ public class NationDAO {
             var leader = dataAccess.leaderDAO.getById(resultSet.getInt("leader"));
             var government = dataAccess.governmentDAO.getById(resultSet.getInt("government"));
             var economicType = dataAccess.economicDAO.getById(resultSet.getInt("economic_type"));
-            var species = new SpeciesDAO(connection).getById(resultSet.getInt("primary_species"));
+            var species = dataAccess.speciesDAO.getById(resultSet.getInt("primary_species"));
             var population = resultSet.getInt("population");
             var stability = resultSet.getDouble("stability");
             var centralization = resultSet.getDouble("centralization");

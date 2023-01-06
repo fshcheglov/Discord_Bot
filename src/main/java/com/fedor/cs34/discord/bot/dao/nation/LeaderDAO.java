@@ -11,11 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LeaderDAO {
-    private final DataAccess dataAccess;
     private final Connection connection;
 
     public LeaderDAO(DataAccess dataAccess) {
-        this.dataAccess = dataAccess;
         this.connection = dataAccess.connection;
     }
 

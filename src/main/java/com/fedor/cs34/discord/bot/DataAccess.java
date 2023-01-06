@@ -23,14 +23,14 @@ public class DataAccess {
 
     public DataAccess(Connection connection) {
         this.connection = connection;
-        this.economicDAO = new EconomicDAO(connection);
-        this.governmentDAO = new GovernmentDAO(connection);
+        this.economicDAO = new EconomicDAO(this);
+        this.governmentDAO = new GovernmentDAO(this);
         this.leaderDAO = new LeaderDAO(this);
         this.nationDAO = new NationDAO(this);
-        this.speciesDAO = new SpeciesDAO(connection);
+        this.speciesDAO = new SpeciesDAO(this);
         this.planetDAO = new PlanetDAO(this);
         this.starDAO = new StarDAO(this);
-        this.starTypeDAO = new StarTypeDAO(connection);
+        this.starTypeDAO = new StarTypeDAO(this);
         this.systemDAO = new SystemDAO(this);
     }
 }

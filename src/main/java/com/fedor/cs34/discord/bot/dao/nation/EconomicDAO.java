@@ -1,5 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.nation.EconomicType;
 
 import java.sql.Connection;
@@ -12,8 +13,8 @@ import java.util.List;
 public class EconomicDAO {
     private final Connection connection;
 
-    public EconomicDAO(Connection connection) {
-        this.connection = connection;
+    public EconomicDAO(DataAccess dataAccess) {
+        this.connection = dataAccess.connection;
     }
 
     public List<EconomicType> getAll() throws SQLException {
