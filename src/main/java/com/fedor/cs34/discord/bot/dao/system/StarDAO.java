@@ -1,5 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.system.Star;
 import com.fedor.cs34.discord.bot.data.system.StarSystem;
 import com.fedor.cs34.discord.bot.data.system.StarType;
@@ -13,10 +14,12 @@ import java.util.List;
 import java.util.Random;
 
 public class StarDAO {
+    private final DataAccess dataAccess;
     private final Connection connection;
 
-    public StarDAO(Connection connection) {
-        this.connection = connection;
+    public StarDAO(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+        this.connection = dataAccess.connection;
     }
 
     public List<Star> getAll() throws SQLException {
@@ -31,13 +34,13 @@ public class StarDAO {
     }
 
     public Star random(int x, int y, int nationID) throws SQLException {
-        var starType = new StarTypeDAO(connection).random();
+        var starType = dataAccess.starTypeDAO.random();
         var name = starType.name.charAt(0) + "-" + x + y;
         StarSystem system;
         if (nationID == 0) {
-            system = new SystemDAO(connection).random(x, y);
+            system = dataAccess.systemDAO.random(x, y);
         } else {
-            system = new SystemDAO(connection).random(x, y, nationID);
+            system = dataAccess.systemDAO.random(x, y, nationID);
         }
         var resources = new Random().nextInt(15);
         var star = new Star(starType, name, system, resources, 0);
@@ -72,9 +75,9 @@ public class StarDAO {
     }
 
     Star createFromResultSet(ResultSet resultSet) throws SQLException {
-        StarType type = new StarTypeDAO(connection).getById(resultSet.getInt("type"));
+        StarType type = dataAccess.starTypeDAO.getById(resultSet.getInt("type"));
         String name = resultSet.getString("name");
-        StarSystem system = new SystemDAO(connection).getById(resultSet.getInt("system"));
+        StarSystem system = dataAccess.systemDAO.getById(resultSet.getInt("system"));
         int resources = resultSet.getInt("resources");
         int id = resultSet.getInt("id");
 

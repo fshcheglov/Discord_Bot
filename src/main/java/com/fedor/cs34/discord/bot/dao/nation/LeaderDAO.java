@@ -1,5 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.nation.Leader;
 
 import java.sql.Connection;
@@ -10,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LeaderDAO {
+    private final DataAccess dataAccess;
     private final Connection connection;
 
-    public LeaderDAO(Connection connection) {
-        this.connection = connection;
+    public LeaderDAO(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+        this.connection = dataAccess.connection;
     }
 
     public void insert(Leader leader) throws SQLException {
