@@ -1,10 +1,19 @@
 package com.fedor.cs34.discord.bot.data.nation;
 
 public class Government {
-    String name;
-    public int id;
-    public Government(String name, int id) {
-        this.name = name;
+    private final int id;
+    private final String name;
+
+    public Government(int id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -24,7 +24,7 @@ public class GovernmentDAO {
         while (resultSet.next()) {
             var id = resultSet.getInt("id");
             var name = resultSet.getString("name");
-            result.add(new Government(name, id));
+            result.add(new Government(id, name));
         }
         return result;
     }
@@ -56,6 +56,6 @@ public class GovernmentDAO {
     static Government createFromResultSet(ResultSet resultSet) throws SQLException {
         var id = resultSet.getInt("id");
         var name = resultSet.getString("name");
-        return new Government(name, id);
+        return new Government(id, name);
     }
 }
