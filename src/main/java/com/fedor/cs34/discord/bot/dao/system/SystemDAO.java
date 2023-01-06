@@ -1,6 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
-import com.fedor.cs34.discord.bot.dao.nation.NationDAO;
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.nation.Nation;
 import com.fedor.cs34.discord.bot.data.system.Coordinates;
 import com.fedor.cs34.discord.bot.data.system.StarSystem;
@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SystemDAO {
+    private final DataAccess dataAccess;
     private final Connection connection;
 
-    public SystemDAO(Connection connection) {
-        this.connection = connection;
+    public SystemDAO(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+        this.connection = dataAccess.connection;
     }
 
     public List<StarSystem> getAll() throws SQLException {
@@ -34,7 +36,7 @@ public class SystemDAO {
         var coordinates = new Coordinates(x, y);
         var name = "";
         Nation owner;
-        owner = new NationDAO(connection).getByID(nationID);
+        owner = dataAccess.nationDAO.getByID(nationID);
         var system = new StarSystem(coordinates, name, owner, 0);
         insert(system);
         return system;
@@ -76,7 +78,7 @@ public class SystemDAO {
     StarSystem createFromResultSet(ResultSet resultSet) throws SQLException {
         var name = resultSet.getString("name");
         var id = resultSet.getInt("id");
-        var owner = new NationDAO(connection).getByID(resultSet.getInt("owner"));
+        var owner = dataAccess.nationDAO.getByID(resultSet.getInt("owner"));
         var coordinates = new Coordinates(resultSet.getInt("map_x"), resultSet.getInt("map_y"));
 
         return new StarSystem(coordinates, name, owner, id);
