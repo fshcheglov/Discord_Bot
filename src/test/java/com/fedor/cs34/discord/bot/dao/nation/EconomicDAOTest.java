@@ -1,6 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
-import com.fedor.cs34.discord.bot.dao.AbstractDOATest;
+import com.fedor.cs34.discord.bot.dao.AbstractDAOTest;
 import com.fedor.cs34.discord.bot.data.nation.EconomicType;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class EconomicDAOTest extends AbstractDOATest {
+class EconomicDAOTest extends AbstractDAOTest {
     @Test
     void getAll() throws SQLException {
         var elements = dataAccess.economicDAO.getAll();

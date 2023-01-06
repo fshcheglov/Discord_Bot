@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.DriverManager;
 
-public class AbstractDOATest {
+public class AbstractDAOTest {
     public DataAccess dataAccess;
 
     @BeforeEach
