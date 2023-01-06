@@ -19,11 +19,11 @@ public class LeaderDAO {
     public void insert(Leader leader) throws SQLException {
         var statement = connection.prepareStatement("insert into leader (name) values(?)",
                 Statement.RETURN_GENERATED_KEYS);
-        statement.setString(1, leader.name);
+        statement.setString(1, leader.getName());
         statement.executeUpdate();
         var keys = statement.getGeneratedKeys();
         keys.next();
-        leader.id = keys.getInt(1);
+        leader.setId(keys.getInt(1));
     }
 
     public List<Leader> getAll() throws SQLException {
@@ -52,7 +52,7 @@ public class LeaderDAO {
     static Leader createFromResultSet(ResultSet resultSet) throws SQLException {
         var id = resultSet.getInt("id");
         var name = resultSet.getString("name");
-        return new Leader(name, id);
+        return new Leader(id, name);
     }
 
 }

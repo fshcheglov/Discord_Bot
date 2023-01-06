@@ -295,7 +295,7 @@ public class Bot {
                         nationName = value;
                         break;
                     case "Leader Name":
-                        leader = new Leader(value, 0);
+                        leader = new Leader(0, value);
                         dataAccess.leaderDAO.insert(leader);
                         break;
                     case "Species":
