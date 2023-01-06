@@ -25,7 +25,7 @@ public class NationDAO {
                 Statement.RETURN_GENERATED_KEYS);
 
         statement.setString(1, nation.nationName);
-        statement.setInt(2, nation.leader.id);
+        statement.setInt(2, nation.leader.getId());
         statement.setInt(3, nation.government.getId());
         statement.setInt(4, nation.economicType.getId());
         statement.setInt(5, nation.species.id);
