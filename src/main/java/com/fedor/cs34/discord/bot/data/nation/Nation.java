@@ -45,7 +45,7 @@ public class Nation {
                 "**Leader: ** " + leader.name + "\n" +
                 "**Species: ** " + species.name + "\n\n" +
 
-                "**Government: ** " + government.name + "\n" +
+                "**Government: ** " + government.getName() + "\n" +
                 "**Economic System:** " + economicType.getName() + "\n\n" +
 
                 "**Resource Points: **" + development.resourcePoints + "\n" +
