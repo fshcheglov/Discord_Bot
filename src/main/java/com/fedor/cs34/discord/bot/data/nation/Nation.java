@@ -46,7 +46,7 @@ public class Nation {
                 "**Species: ** " + species.name + "\n\n" +
 
                 "**Government: ** " + government.name + "\n" +
-                "**Economic System:** " + economicType.name + "\n\n" +
+                "**Economic System:** " + economicType.getName() + "\n\n" +
 
                 "**Resource Points: **" + development.resourcePoints + "\n" +
                 "**Economic Points: **" + development.economicPoints + "\n" +

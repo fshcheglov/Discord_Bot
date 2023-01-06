@@ -2,10 +2,27 @@ package com.fedor.cs34.discord.bot.data.nation;
 
 //TODO Make EconomicType abstract and be extended by all existing economic types.
 public class EconomicType {
-    String name;
-    public int id;
-    public EconomicType(String economicTypeName, int id) {
-        this.name = economicTypeName;
+    private final int id;
+    private final String name;
+
+    public EconomicType(int id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "EconomicType{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }
