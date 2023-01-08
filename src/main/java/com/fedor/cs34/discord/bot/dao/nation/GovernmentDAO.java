@@ -1,5 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.nation.Government;
 
 import java.sql.Connection;
@@ -12,8 +13,8 @@ import java.util.List;
 public class GovernmentDAO {
     private final Connection connection;
 
-    public GovernmentDAO(Connection connection) {
-        this.connection = connection;
+    public GovernmentDAO(DataAccess dataAccess) {
+        this.connection = dataAccess.connection;
     }
 
     public List<Government> getAll() throws SQLException {
