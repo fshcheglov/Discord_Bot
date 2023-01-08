@@ -1,5 +1,6 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
+import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.system.Planet;
 
 import java.sql.Connection;
@@ -10,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlanetDAO {
+    private final DataAccess dataAccess;
     private final Connection connection;
 
-    public PlanetDAO(Connection connection) {
-        this.connection = connection;
+    public PlanetDAO(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+        this.connection = dataAccess.connection;
     }
 
     public List<Planet> getAll() throws SQLException {
@@ -22,7 +25,7 @@ public class PlanetDAO {
         ResultSet resultSet = statement.executeQuery("SELECT * FROM planet");
 
         while (resultSet.next()) {
-            result.add(createFromResultSet(resultSet, connection));
+            result.add(createFromResultSet(resultSet));
         }
         return result;
     }
@@ -33,7 +36,7 @@ public class PlanetDAO {
         var resultSet = statement.executeQuery();
 
         if (resultSet.next()) {
-            return createFromResultSet(resultSet, connection);
+            return createFromResultSet(resultSet);
         } else {
             throw new IllegalArgumentException("No planet with ID: " + id);
         }
@@ -58,7 +61,7 @@ public class PlanetDAO {
         planet.id = keys.getInt(1);
     }
 
-    static Planet createFromResultSet(ResultSet resultSet, Connection connection) throws SQLException {
+    Planet createFromResultSet(ResultSet resultSet) throws SQLException {
         var name = resultSet.getString("name");
         var type = resultSet.getString("type");
         var resources = resultSet.getInt("resources");
@@ -66,7 +69,7 @@ public class PlanetDAO {
         var development = resultSet.getInt("development");
         var size = resultSet.getInt("planet_size");
         //starDAO get by ID
-        var star = new StarDAO(connection).getById(resultSet.getInt("star"));
+        var star = dataAccess.starDAO.getById(resultSet.getInt("star"));
         var isHabitable = resultSet.getInt("is_habitable") == 1;
         var id = resultSet.getInt("id");
         return new Planet(name, type, resources, population, development, size, star, isHabitable, id);

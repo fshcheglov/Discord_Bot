@@ -1,7 +1,7 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
-import com.fedor.cs34.discord.bot.dao.system.PlanetDAO;
-import com.fedor.cs34.discord.bot.data.nation.*;
+import com.fedor.cs34.discord.bot.DataAccess;
+import com.fedor.cs34.discord.bot.data.nation.Nation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NationDAO {
+    private final DataAccess dataAccess;
     private final Connection connection;
 
-    public NationDAO(Connection connection) {
-        this.connection = connection;
+    public NationDAO(DataAccess dataAccess) {
+        this.dataAccess = dataAccess;
+        this.connection = dataAccess.connection;
     }
 
     public void insert(Nation nation) throws SQLException {
@@ -53,10 +55,10 @@ public class NationDAO {
         while (resultSet.next()) {
             var id = resultSet.getInt("id");
             var nationName = resultSet.getString("name");
-            var leader = new LeaderDAO(connection).getById(resultSet.getInt("leader"));
-            var government = new GovernmentDAO(connection).getById(resultSet.getInt("government"));
-            var economicType = new EconomicDAO(connection).getById(resultSet.getInt("economic_type"));
-            var species = new SpeciesDAO(connection).getById(resultSet.getInt("primary_species"));
+            var leader = dataAccess.leaderDAO.getById(resultSet.getInt("leader"));
+            var government = dataAccess.governmentDAO.getById(resultSet.getInt("government"));
+            var economicType = dataAccess.economicDAO.getById(resultSet.getInt("economic_type"));
+            var species = dataAccess.speciesDAO.getById(resultSet.getInt("primary_species"));
             var population = resultSet.getInt("population");
             var stability = resultSet.getDouble("stability");
             var centralization = resultSet.getDouble("centralization");
@@ -66,7 +68,7 @@ public class NationDAO {
             var economicPoints = resultSet.getInt("economic_points");
             var manpowerPoints = resultSet.getInt("manpower_points");
 
-            var capital = new PlanetDAO(connection).getById(resultSet.getInt("capital"));
+            var capital = dataAccess.planetDAO.getById(resultSet.getInt("capital"));
 
             var ownerID = resultSet.getString("ownerID");
 
