@@ -17,6 +17,9 @@ public class StarDAO {
     private final DataAccess dataAccess;
     private final Connection connection;
 
+    private int readingId = -1;
+    private Star readingInstance;
+
     public StarDAO(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
         this.connection = dataAccess.connection;
@@ -37,11 +40,18 @@ public class StarDAO {
         var starType = dataAccess.starTypeDAO.random();
         var name = starType.name.charAt(0) + "-" + x + y;
         StarSystem system;
-        if (nationID == 0) {
-            system = dataAccess.systemDAO.random(x, y);
-        } else {
-            system = dataAccess.systemDAO.random(x, y, nationID);
-        }
+        system = dataAccess.systemDAO.random(x, y, nationID);
+        var resources = new Random().nextInt(15);
+        var star = new Star(starType, name, system, resources, 0);
+        insert(star);
+        return star;
+    }
+
+    public Star random(int x, int y) throws SQLException {
+        var starType = dataAccess.starTypeDAO.random();
+        var name = starType.name.charAt(0) + "-" + x + y;
+        StarSystem system;
+        system = dataAccess.systemDAO.random(x, y);
         var resources = new Random().nextInt(15);
         var star = new Star(starType, name, system, resources, 0);
         insert(star);
@@ -49,6 +59,9 @@ public class StarDAO {
     }
 
     Star getById(int id) throws SQLException {
+        if (id == readingId) {
+            return readingInstance;
+        }
         var statement = connection.prepareStatement("SELECT * FROM star WHERE id = ?");
         statement.setInt(1, id);
         var resultSet = statement.executeQuery();
@@ -77,10 +90,12 @@ public class StarDAO {
     Star createFromResultSet(ResultSet resultSet) throws SQLException {
         StarType type = dataAccess.starTypeDAO.getById(resultSet.getInt("type"));
         String name = resultSet.getString("name");
-        StarSystem system = dataAccess.systemDAO.getById(resultSet.getInt("system"));
         int resources = resultSet.getInt("resources");
         int id = resultSet.getInt("id");
-
-        return new Star(type, name, system, resources, id);
+        var result = new Star(type, name, null, resources, id);
+        readingId = id;
+        readingInstance = result;
+        result.system = dataAccess.systemDAO.getById(resultSet.getInt("system"));
+        return result;
     }
 }

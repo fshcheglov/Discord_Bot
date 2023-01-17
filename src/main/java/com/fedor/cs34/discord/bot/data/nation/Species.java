@@ -1,10 +1,23 @@
 package com.fedor.cs34.discord.bot.data.nation;
 
 public class Species {
-  public   String name;
-    public int id;
-    public Species(String name, int id) {
+    private final String name;
+    private int id;
+
+    public Species(int id, String name) {
+        this.id = id;
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
     }
 }

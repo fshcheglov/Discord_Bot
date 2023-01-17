@@ -2,10 +2,11 @@ package com.fedor.cs34.discord.bot.data.system;
 
 import com.fedor.cs34.discord.bot.data.nation.Nation;
 
+import javax.annotation.Nullable;
+
 public class Planet {
     public int id;
     public String name;
-    public Nation owner;
     public String type;
     public int resources;
     public int population = 0;
@@ -17,7 +18,6 @@ public class Planet {
     public Planet(String name, String planetType, int resources, int population, int development, int size, Star star, boolean isHabitable, int id) {
         this.star = star;
         this.name = name;
-        this.owner = star.owner;
         this.type = planetType;
         this.resources = resources;
         this.population = population;

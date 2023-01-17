@@ -43,7 +43,7 @@ public class Nation {
     public String getNationInfo() {
         return ("**Nation name: ** " + nationName + "\n" +
                 "**Leader: ** " + leader.getName() + "\n" +
-                "**Species: ** " + species.name + "\n\n" +
+                "**Species: ** " + species.getName() + "\n\n" +
 
                 "**Government: ** " + government.getName() + "\n" +
                 "**Economic System:** " + economicType.getName() + "\n\n" +

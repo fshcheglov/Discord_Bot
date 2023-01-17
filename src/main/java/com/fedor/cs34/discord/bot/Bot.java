@@ -45,7 +45,7 @@ public class Bot {
                         var templateMessage = e.getMessage();
                         System.out.println(templateMessage.getContentStripped());
                         try {
-                            capital[0] = handleCreatePlanet(access, templateMessage.getContentStripped(), 0);
+                            capital[0] = handleCreatePlanet(access, templateMessage.getContentStripped(), 0, true);
                             if (capital[0] == null) {
                                 templateMessage.reply("**Sorry, you didn't follow the template.**").queue();
                             } else {
@@ -188,7 +188,7 @@ public class Bot {
                         """;
     }
 
-    public static Planet handleCreatePlanet(DataAccess dataAccess, String input, int nationID) throws Exception {
+    public static Planet handleCreatePlanet(DataAccess dataAccess, String input, int nationID, boolean isPlayerCapital) throws Exception {
         var lines = input.split("\n");
         String planetName = null;
         String planetType = null;
@@ -260,9 +260,14 @@ public class Bot {
                 }
             }
         }
-
-        Planet planet = new Planet(planetName, planetType, planetResources, planetPopulation, planetDevelopment,
-                planetSize, dataAccess.starDAO.random(x, y, nationID), true, 0);
+        Planet planet;
+        if (!isPlayerCapital) {
+            planet = new Planet(planetName, planetType, planetResources, planetPopulation, planetDevelopment,
+                    planetSize, dataAccess.starDAO.random(x, y, nationID), true, 0);
+        } else {
+            planet = new Planet(planetName, planetType, planetResources, planetPopulation, planetDevelopment,
+                    planetSize, dataAccess.starDAO.random(x, y), true, 0);
+        }
         dataAccess.planetDAO.insert(planet);
         if (x >= 0 && y >= 0 && planetName != null && planetType != null) {
             return planet;
@@ -299,7 +304,7 @@ public class Bot {
                         dataAccess.leaderDAO.insert(leader);
                         break;
                     case "Species":
-                        species = new Species(value, 0);
+                        species = new Species(0, value);
                         dataAccess.speciesDAO.insert(species);
                         break;
                     case "Government Type":
@@ -369,7 +374,7 @@ public class Bot {
         }
 
         Nation nation = new Nation(nationName, leader, government, economicType, species, population, stability, centralization, approval, capital, 0, ownerID);
-        capital.star.owner = nation;
+        capital.star.system.owner = nation;
         nation.development = development;
         dataAccess.nationDAO.insert(nation);
         if (nationName != null && leader != null && government != null && economicType != null && species != null) {

@@ -43,16 +43,16 @@ public class SpeciesDAO {
     public void insert(Species species) throws SQLException {
         var statement = connection.prepareStatement("insert into species (name) values(?)",
                 Statement.RETURN_GENERATED_KEYS);
-        statement.setString(1, species.name);
+        statement.setString(1, species.getName());
         statement.executeUpdate();
         var keys = statement.getGeneratedKeys();
         keys.next();
-        species.id = keys.getInt(1);
+        species.setId(keys.getInt(1));
     }
 
     static Species createFromResultSet(ResultSet resultSet) throws SQLException {
         var id = resultSet.getInt("id");
         var name = resultSet.getString("name");
-        return new Species(name, id);
+        return new Species(id, name);
     }
 }
