@@ -14,6 +14,9 @@ public class PlanetDAO {
     private final DataAccess dataAccess;
     private final Connection connection;
 
+    private int readingId = -1;
+    private Planet readingInstance;
+
     public PlanetDAO(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
         this.connection = dataAccess.connection;
@@ -31,6 +34,10 @@ public class PlanetDAO {
     }
 
     public Planet getById(int id) throws SQLException {
+        if (id == readingId) {
+            return readingInstance;
+        }
+
         var statement = connection.prepareStatement("SELECT * FROM planet WHERE id = ?");
         statement.setInt(1, id);
         var resultSet = statement.executeQuery();
@@ -62,16 +69,18 @@ public class PlanetDAO {
     }
 
     Planet createFromResultSet(ResultSet resultSet) throws SQLException {
+        var id = resultSet.getInt("id");
         var name = resultSet.getString("name");
         var type = resultSet.getString("type");
         var resources = resultSet.getInt("resources");
         var population = resultSet.getInt("population");
         var development = resultSet.getInt("development");
         var size = resultSet.getInt("planet_size");
-        //starDAO get by ID
-        var star = dataAccess.starDAO.getById(resultSet.getInt("star"));
         var isHabitable = resultSet.getInt("is_habitable") == 1;
-        var id = resultSet.getInt("id");
-        return new Planet(name, type, resources, population, development, size, star, isHabitable, id);
+        var result = new Planet(name, type, resources, population, development, size, null, isHabitable, id);
+        readingId = id;
+        readingInstance = result;
+        result.star = dataAccess.starDAO.getById(resultSet.getInt("star"));
+        return result;
     }
 }

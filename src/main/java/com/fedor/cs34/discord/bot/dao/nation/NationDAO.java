@@ -14,12 +14,17 @@ public class NationDAO {
     private final DataAccess dataAccess;
     private final Connection connection;
 
+    private int readingId = -1;
+    private Nation readingInstance;
+
     public NationDAO(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
         this.connection = dataAccess.connection;
     }
 
     public void insert(Nation nation) throws SQLException {
+        nation.capital.star.system.owner = nation;
+
         var statement = connection.prepareStatement("insert into nation " +
                         "(name, leader, government, economic_type, primary_species, ownerID, resource_points," +
                         " economic_points, manpower_points, stability, centralization, approval, population, capital) " +
@@ -30,7 +35,7 @@ public class NationDAO {
         statement.setInt(2, nation.leader.getId());
         statement.setInt(3, nation.government.getId());
         statement.setInt(4, nation.economicType.getId());
-        statement.setInt(5, nation.species.id);
+        statement.setInt(5, nation.species.getId());
         statement.setString(6, nation.ownerID);
         statement.setInt(7, nation.development.resourcePoints);
         statement.setInt(8, nation.development.economicPoints);
@@ -45,6 +50,7 @@ public class NationDAO {
         var keys = statement.getGeneratedKeys();
         keys.next();
         nation.id = keys.getInt(1);
+        dataAccess.systemDAO.setOwner(nation.capital.star.system, nation);
     }
 
     public List<Nation> getAll() throws SQLException {
@@ -83,13 +89,51 @@ public class NationDAO {
         return result;
     }
 
-    public Nation getByID(int id) throws SQLException {
-        var nations = getAll();
-        for (var nation : nations) {
-            if (nation.id == id) {
-                return nation;
-            }
+    public Nation getById(int id) throws SQLException {
+        if (id == readingId) {
+            return readingInstance;
         }
-        throw new IllegalArgumentException("No nation with ID: " + id);
+
+        var statement = connection.prepareStatement("SELECT * FROM nation WHERE id = ?");
+        statement.setInt(1, id);
+        var resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return createFromResultSet(resultSet);
+        } else {
+            throw new IllegalArgumentException("No nation with ID: " + id);
+        }
+    }
+
+    Nation createFromResultSet(ResultSet resultSet) throws SQLException {
+        var id = resultSet.getInt("id");
+        var nationName = resultSet.getString("name");
+        var leader = dataAccess.leaderDAO.getById(resultSet.getInt("leader"));
+        var government = dataAccess.governmentDAO.getById(resultSet.getInt("government"));
+        var economicType = dataAccess.economicDAO.getById(resultSet.getInt("economic_type"));
+        var species = dataAccess.speciesDAO.getById(resultSet.getInt("primary_species"));
+        var population = resultSet.getInt("population");
+        var stability = resultSet.getDouble("stability");
+        var centralization = resultSet.getDouble("centralization");
+        var approval = resultSet.getDouble("approval");
+
+        var resourcePoints = resultSet.getInt("resource_points");
+        var economicPoints = resultSet.getInt("economic_points");
+        var manpowerPoints = resultSet.getInt("manpower_points");
+
+        var ownerID = resultSet.getString("ownerID");
+
+
+        var result = new Nation(nationName, leader, government, economicType, species, population, stability,
+                centralization, approval, null, id, ownerID);
+        result.development.resourcePoints = resourcePoints;
+        result.development.economicPoints = economicPoints;
+        result.development.manpowerPoints = manpowerPoints;
+
+        readingId = id;
+        readingInstance = result;
+
+        result.capital = dataAccess.planetDAO.getById(resultSet.getInt("capital"));
+        return result;
     }
 }

@@ -68,9 +68,9 @@ CREATE TABLE IF NOT EXISTS nation (
     resource_points int,
     economic_points int,
     manpower_points int,
-    stability int,
-    centralization int,
-    approval int,
+    stability double,
+    centralization double,
+    approval double,
     population int,
     capital int,
 
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS nation (
 
 CREATE TABLE IF NOT EXISTS system2(
     id IDENTITY NOT NULL PRIMARY KEY,
-    owner int,
+    owner int NULL,
     name VARCHAR(256),
     map_x int,
     map_y int,

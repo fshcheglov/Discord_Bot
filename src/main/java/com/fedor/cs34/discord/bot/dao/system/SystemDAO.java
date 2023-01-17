@@ -16,6 +16,9 @@ public class SystemDAO {
     private final DataAccess dataAccess;
     private final Connection connection;
 
+    private int readingId = -1;
+    private StarSystem readingInstance;
+
     public SystemDAO(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
         this.connection = dataAccess.connection;
@@ -36,7 +39,7 @@ public class SystemDAO {
         var coordinates = new Coordinates(x, y);
         var name = "";
         Nation owner;
-        owner = dataAccess.nationDAO.getByID(nationID);
+        owner = dataAccess.nationDAO.getById(nationID);
         var system = new StarSystem(coordinates, name, owner, 0);
         insert(system);
         return system;
@@ -50,7 +53,10 @@ public class SystemDAO {
         return system;
     }
 
-    StarSystem getById(int id) throws SQLException {
+  public  StarSystem getById(int id) throws SQLException {
+        if (id == readingId) {
+            return readingInstance;
+        }
         var statement = connection.prepareStatement("SELECT * FROM system2 WHERE id = ?");
         statement.setInt(1, id);
         var resultSet = statement.executeQuery();
@@ -75,12 +81,29 @@ public class SystemDAO {
         system.id = keys.getInt(1);
     }
 
-    StarSystem createFromResultSet(ResultSet resultSet) throws SQLException {
+    private StarSystem createFromResultSet(ResultSet resultSet) throws SQLException {
         var name = resultSet.getString("name");
         var id = resultSet.getInt("id");
-        var owner = dataAccess.nationDAO.getByID(resultSet.getInt("owner"));
         var coordinates = new Coordinates(resultSet.getInt("map_x"), resultSet.getInt("map_y"));
 
-        return new StarSystem(coordinates, name, owner, id);
+
+        var result = new StarSystem(coordinates, name, null, id);
+        readingId = id;
+        readingInstance = result;
+
+        var ownerId = resultSet.getInt("owner");
+        if (!resultSet.wasNull()) {
+            result.owner = dataAccess.nationDAO.getById(ownerId);
+        }
+
+        return result;
+    }
+
+    public void setOwner(StarSystem starSystem, Nation nation) throws SQLException {
+        starSystem.owner = nation;
+        var statement = connection.prepareStatement("UPDATE system2 SET owner=? WHERE ID=?");
+        statement.setInt(1, nation.id);
+        statement.setInt(2, starSystem.id);
+        statement.executeUpdate();
     }
 }
