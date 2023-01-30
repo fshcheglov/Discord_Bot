@@ -20,7 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 public class Bot {
     public static void main(String[] args) throws Exception {
-        String jdbcURL = "jdbc:h2:C:/Users/Fedor3/Documents/database/H2/interstellar";
+        var arguments = CommandLineArguments.parse(args);
+
+        String jdbcURL = "jdbc:h2:" + arguments.databasePath;
         String username = "Vrell";
         String password = "1234";
         Connection connection = DriverManager.getConnection(jdbcURL, username, password);
@@ -32,7 +34,7 @@ public class Bot {
         var dataAccess = new DataAccess(connection);
 
         EventWaiter waiter = new EventWaiter();
-        JDABuilder jda = JDABuilder.createDefault("MTAyMzgxOTQ1NjkwMTgyODY1OQ.GvZ7Y8.08hUaT0TRGRtGPsdAPnnQHzP_v9WKuRj4IK8J0");
+        JDABuilder jda = JDABuilder.createDefault(arguments.discordToken);
         jda.addEventListeners(waiter);
         jda.addEventListeners((EventListener) event -> {
             if (event instanceof MessageReceivedEvent) {
