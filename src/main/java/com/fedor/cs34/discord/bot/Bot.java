@@ -1,12 +1,16 @@
 package com.fedor.cs34.discord.bot;
 
+import com.fedor.cs34.discord.bot.data.Map;
 import com.fedor.cs34.discord.bot.data.nation.*;
 import com.fedor.cs34.discord.bot.data.system.Planet;
+import com.fedor.cs34.discord.bot.util.Images;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.utils.FileUpload;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -23,12 +27,12 @@ public class Bot {
 
         connection.setAutoCommit(false);
 
-        CreateDatabases.startDatabase(connection, "interstellar_database.sql");
+//        CreateDatabases.startDatabase(connection, "interstellar_database.sql");
 
-        var access = new DataAccess(connection);
+        var dataAccess = new DataAccess(connection);
 
         EventWaiter waiter = new EventWaiter();
-        JDABuilder jda = JDABuilder.createDefault("MTAyMzgxOTQ1NjkwMTgyODY1OQ.Gvm8oI.xBh8hWE0tYCCmu9wbVP_NUH8d4CiWTXzKPSXBQ");
+        JDABuilder jda = JDABuilder.createDefault("MTAyMzgxOTQ1NjkwMTgyODY1OQ.GvZ7Y8.08hUaT0TRGRtGPsdAPnnQHzP_v9WKuRj4IK8J0");
         jda.addEventListeners(waiter);
         jda.addEventListeners((EventListener) event -> {
             if (event instanceof MessageReceivedEvent) {
@@ -45,7 +49,7 @@ public class Bot {
                         var templateMessage = e.getMessage();
                         System.out.println(templateMessage.getContentStripped());
                         try {
-                            capital[0] = handleCreatePlanet(access, templateMessage.getContentStripped(), 0, true);
+                            capital[0] = handleCreatePlanet(dataAccess, templateMessage.getContentStripped(), 0);
                             if (capital[0] == null) {
                                 templateMessage.reply("**Sorry, you didn't follow the template.**").queue();
                             } else {
@@ -57,7 +61,7 @@ public class Bot {
                                     System.out.println(templateMessage2.getContentStripped());
                                     try {
                                         var id = templateMessage2.getAuthor().getId();
-                                        if (!handleCreateNation(access, templateMessage2.getContentStripped(), id, capital[0])) {
+                                        if (!handleCreateNation(dataAccess, templateMessage2.getContentStripped(), id, capital[0])) {
                                             templateMessage2.reply("**Sorry, you didn't follow the template.**").queue();
                                         } else {
                                             templateMessage2.reply("**Nation Registered**").queue();
@@ -72,14 +76,12 @@ public class Bot {
                             throw new RuntimeException(ex);
                         }
                     }, 10, TimeUnit.MINUTES, () -> ((MessageReceivedEvent) event).getMessage().reply("Sorry, you took too long.").queue());
-
-
                 }
 
                 if (message.equals("!EmpireList")) {
                     List<Nation> nations;
                     try {
-                        nations = access.nationDAO.getAll();
+                        nations = dataAccess.nationDAO.getAll();
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -92,7 +94,7 @@ public class Bot {
                     if (mentionedUsers.size() > 0) {
                         var id = mentionedUsers.get(0).getId();
                         try {
-                            var nations = access.nationDAO.getAll();
+                            var nations = dataAccess.nationDAO.getAll();
                             var ownedNations = new ArrayList<Nation>();
                             int nationCount = 0;
                             for (var nation : nations) {
@@ -135,6 +137,16 @@ public class Bot {
                         }
                     }
                 }
+                if (message.equals("!map")) {
+                    try {
+                        var image = new Map(dataAccess).createNationMap();
+                        var bytes = Images.toByteArray(image, "png");
+                        ((MessageReceivedEvent) event).getMessage().replyFiles(FileUpload.fromData(bytes, "map.png")).queue();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
                 if (message.equals("!ResetDatabases")) {
                     // Command for testing. Remove in final version.
                     try {
@@ -188,7 +200,7 @@ public class Bot {
                         """;
     }
 
-    public static Planet handleCreatePlanet(DataAccess dataAccess, String input, int nationID, boolean isPlayerCapital) throws Exception {
+    public static Planet handleCreatePlanet(DataAccess dataAccess, String input, int nationID) throws Exception {
         var lines = input.split("\n");
         String planetName = null;
         String planetType = null;
@@ -261,13 +273,8 @@ public class Bot {
             }
         }
         Planet planet;
-        if (!isPlayerCapital) {
-            planet = new Planet(planetName, planetType, planetResources, planetPopulation, planetDevelopment,
-                    planetSize, dataAccess.starDAO.random(x, y, nationID), true, 0);
-        } else {
-            planet = new Planet(planetName, planetType, planetResources, planetPopulation, planetDevelopment,
-                    planetSize, dataAccess.starDAO.random(x, y), true, 0);
-        }
+        planet = new Planet(planetName, planetType, planetResources, planetPopulation, planetDevelopment,
+                planetSize, dataAccess.starDAO.random(nationID), true, 0);
         dataAccess.planetDAO.insert(planet);
         if (x >= 0 && y >= 0 && planetName != null && planetType != null) {
             return planet;
@@ -374,7 +381,7 @@ public class Bot {
         }
 
         Nation nation = new Nation(nationName, leader, government, economicType, species, population, stability, centralization, approval, capital, 0, ownerID);
-        capital.star.system.owner = nation;
+        dataAccess.planetDAO.setOwner(capital, nation);
         nation.development = development;
         dataAccess.nationDAO.insert(nation);
         if (nationName != null && leader != null && government != null && economicType != null && species != null) {

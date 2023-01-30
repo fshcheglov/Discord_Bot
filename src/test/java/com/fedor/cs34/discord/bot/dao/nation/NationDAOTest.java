@@ -4,19 +4,25 @@ import com.fedor.cs34.discord.bot.dao.AbstractDAOTest;
 import com.fedor.cs34.discord.bot.data.nation.Leader;
 import com.fedor.cs34.discord.bot.data.nation.Nation;
 import com.fedor.cs34.discord.bot.data.nation.Species;
+import com.fedor.cs34.discord.bot.data.system.Coordinates;
 import com.fedor.cs34.discord.bot.data.system.Planet;
+import com.fedor.cs34.discord.bot.data.system.Star;
 import com.fedor.cs34.discord.bot.data.system.StarSystem;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
 
 public class NationDAOTest extends AbstractDAOTest {
     @Test
     void insert() throws SQLException {
+        var system = new StarSystem(new Coordinates(0,0), "bar", null, -1);
+        dataAccess.starSystemDAO.insert(system);
+        Star star = new Star(dataAccess.starTypeDAO.random(), "foo", system,4, -1);
+        dataAccess.starDAO.insert(star);
+
         var name = "Nation name";
         var nationId = 1;
         var leaderName = "My leader";
@@ -42,7 +48,7 @@ public class NationDAOTest extends AbstractDAOTest {
             var species = new Species(-1, speciesName);
             dataAccess.speciesDAO.insert(species);
 
-            var capital = new Planet(planetName, planetType, resources, population, development, size, dataAccess.starDAO.random(1, 1), true, -1);
+            var capital = new Planet(planetName, planetType, resources, population, development, size, star, true, -1);
             dataAccess.planetDAO.insert(capital);
 
             var government = dataAccess.governmentDAO.getById(governmentId);
@@ -77,7 +83,7 @@ public class NationDAOTest extends AbstractDAOTest {
         }
 
         {
-            var starSystem = dataAccess.systemDAO.getById(1);
+            var starSystem = dataAccess.starSystemDAO.getById(1);
             assertThat(starSystem.owner.capital.star.system, sameInstance(starSystem));
         }
     }

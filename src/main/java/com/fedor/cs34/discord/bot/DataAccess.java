@@ -4,7 +4,7 @@ import com.fedor.cs34.discord.bot.dao.nation.*;
 import com.fedor.cs34.discord.bot.dao.system.PlanetDAO;
 import com.fedor.cs34.discord.bot.dao.system.StarDAO;
 import com.fedor.cs34.discord.bot.dao.system.StarTypeDAO;
-import com.fedor.cs34.discord.bot.dao.system.SystemDAO;
+import com.fedor.cs34.discord.bot.dao.system.StarSystemDAO;
 
 import java.sql.Connection;
 
@@ -18,7 +18,7 @@ public class DataAccess {
     public final PlanetDAO planetDAO;
     public final StarDAO starDAO;
     public final StarTypeDAO starTypeDAO;
-    public final SystemDAO systemDAO;
+    public final StarSystemDAO starSystemDAO;
 
 
     public DataAccess(Connection connection) {
@@ -31,6 +31,6 @@ public class DataAccess {
         this.planetDAO = new PlanetDAO(this);
         this.starDAO = new StarDAO(this);
         this.starTypeDAO = new StarTypeDAO(this);
-        this.systemDAO = new SystemDAO(this);
+        this.starSystemDAO = new StarSystemDAO(this);
     }
 }

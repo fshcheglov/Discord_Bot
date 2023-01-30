@@ -1,7 +1,5 @@
 package com.fedor.cs34.discord.bot.data.system;
 
-import com.fedor.cs34.discord.bot.data.nation.Nation;
-
 public class Star {
     public int id;
     public StarType type;

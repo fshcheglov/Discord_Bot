@@ -26,7 +26,8 @@ public class StarTypeDAO {
         while (resultSet.next()) {
             var id = resultSet.getInt("id");
             var name = resultSet.getString("name");
-            result.add(new StarType(name, id));
+            var mapColor = resultSet.getInt("map_color");
+            result.add(new StarType(name, id, mapColor));
         }
         return result;
     }
@@ -47,14 +48,13 @@ public class StarTypeDAO {
         var statement = connection.prepareStatement("SELECT COUNT (*) FROM star_type");
         var resultSet = statement.executeQuery();
         int count = -1;
-        if (resultSet.next())
-        {
+        if (resultSet.next()) {
             count = resultSet.getInt(1);
         }
         return count;
     }
 
-    StarType random() throws SQLException {
+    public StarType random() throws SQLException {
         var randomID = 1 + new Random().nextInt(count());
         return getById(randomID);
     }
@@ -74,6 +74,7 @@ public class StarTypeDAO {
     static StarType createFromResultSet(ResultSet resultSet) throws SQLException {
         var id = resultSet.getInt("id");
         var name = resultSet.getString("name");
-        return new StarType(name, id);
+        var mapColor = resultSet.getInt("map_color");
+        return new StarType(name, id, mapColor);
     }
 }

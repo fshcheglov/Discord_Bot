@@ -28,7 +28,7 @@ public class EconomicDAO {
         return result;
     }
 
-    EconomicType getById(int id) throws SQLException {
+    public EconomicType getById(int id) throws SQLException {
         var statement = connection.prepareStatement("SELECT * FROM economy WHERE id = ?");
         statement.setInt(1, id);
         var resultSet = statement.executeQuery();

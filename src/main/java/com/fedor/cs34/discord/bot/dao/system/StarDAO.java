@@ -36,27 +36,25 @@ public class StarDAO {
         return result;
     }
 
-    public Star random(int x, int y, int nationID) throws SQLException {
-        var starType = dataAccess.starTypeDAO.random();
-        var name = starType.name.charAt(0) + "-" + x + y;
-        StarSystem system;
-        system = dataAccess.systemDAO.random(x, y, nationID);
-        var resources = new Random().nextInt(15);
-        var star = new Star(starType, name, system, resources, 0);
-        insert(star);
-        return star;
+    private int count() throws SQLException {
+        var statement = connection.prepareStatement("SELECT COUNT (*) FROM star");
+        var resultSet = statement.executeQuery();
+        int count = -1;
+        if (resultSet.next()) {
+            count = resultSet.getInt(1);
+        }
+        return count;
     }
 
-    public Star random(int x, int y) throws SQLException {
-        var starType = dataAccess.starTypeDAO.random();
-        var name = starType.name.charAt(0) + "-" + x + y;
-        StarSystem system;
-        system = dataAccess.systemDAO.random(x, y);
-        var resources = new Random().nextInt(15);
-        var star = new Star(starType, name, system, resources, 0);
-        insert(star);
-        return star;
+    public Star random(int nationID) throws SQLException {
+        var randomID = 1 + new Random().nextInt(count());
+
+        var randomStar = getById(randomID);
+        randomStar.system.owner = dataAccess.nationDAO.getById(nationID);
+
+        return randomStar;
     }
+
 
     Star getById(int id) throws SQLException {
         if (id == readingId) {
@@ -95,7 +93,7 @@ public class StarDAO {
         var result = new Star(type, name, null, resources, id);
         readingId = id;
         readingInstance = result;
-        result.system = dataAccess.systemDAO.getById(resultSet.getInt("system"));
+        result.system = dataAccess.starSystemDAO.getById(resultSet.getInt("system"));
         return result;
     }
 }

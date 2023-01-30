@@ -30,7 +30,7 @@ public class GovernmentDAO {
         return result;
     }
 
-    Government getById(int id) throws SQLException {
+    public Government getById(int id) throws SQLException {
         var statement = connection.prepareStatement("SELECT * FROM government WHERE id = ?");
         statement.setInt(1, id);
         var resultSet = statement.executeQuery();

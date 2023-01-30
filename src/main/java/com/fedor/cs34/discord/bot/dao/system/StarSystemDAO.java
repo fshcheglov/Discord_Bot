@@ -4,6 +4,7 @@ import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.data.nation.Nation;
 import com.fedor.cs34.discord.bot.data.system.Coordinates;
 import com.fedor.cs34.discord.bot.data.system.StarSystem;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,48 +13,33 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SystemDAO {
+public class StarSystemDAO {
     private final DataAccess dataAccess;
     private final Connection connection;
 
     private int readingId = -1;
     private StarSystem readingInstance;
 
-    public SystemDAO(DataAccess dataAccess) {
+    public StarSystemDAO(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
         this.connection = dataAccess.connection;
     }
 
     public List<StarSystem> getAll() throws SQLException {
-        var result = new ArrayList<StarSystem>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM system2");
-
-        while (resultSet.next()) {
-            result.add(createFromResultSet(resultSet));
-        }
-        return result;
+        var statement = connection.createStatement();
+        var resultSet = statement.executeQuery("SELECT * FROM system2");
+        return listFromResultSet(resultSet);
     }
 
-    StarSystem random(int x, int y, int nationID) throws SQLException {
-        var coordinates = new Coordinates(x, y);
-        var name = "";
-        Nation owner;
-        owner = dataAccess.nationDAO.getById(nationID);
-        var system = new StarSystem(coordinates, name, owner, 0);
-        insert(system);
-        return system;
+    public List<StarSystem> getOwnedBy(Nation nation) throws SQLException {
+        var statement = connection.prepareStatement("SELECT * FROM system2 WHERE owner = ?");
+        statement.setInt(1, nation.id);
+
+        var resultSet = statement.executeQuery();
+        return listFromResultSet(resultSet);
     }
 
-    StarSystem random(int x, int y) throws SQLException {
-        var coordinates = new Coordinates(x, y);
-        var name = "";
-        var system = new StarSystem(coordinates, name, null, 0);
-        insert(system);
-        return system;
-    }
-
-  public  StarSystem getById(int id) throws SQLException {
+    public StarSystem getById(int id) throws SQLException {
         if (id == readingId) {
             return readingInstance;
         }
@@ -96,6 +82,15 @@ public class SystemDAO {
             result.owner = dataAccess.nationDAO.getById(ownerId);
         }
 
+        return result;
+    }
+
+    @NotNull
+    private ArrayList<StarSystem> listFromResultSet(ResultSet resultSet) throws SQLException {
+        var result = new ArrayList<StarSystem>();
+        while (resultSet.next()) {
+            result.add(createFromResultSet(resultSet));
+        }
         return result;
     }
 
