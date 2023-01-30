@@ -40,6 +40,8 @@ public class NationDAO {
         statement.setInt(7, nation.development.resourcePoints);
         statement.setInt(8, nation.development.economicPoints);
         statement.setInt(9, nation.development.manpowerPoints);
+        // Remove Stability
+        // Remove Approval
         statement.setDouble(10, nation.stability);
         statement.setDouble(11, nation.centralization);
         statement.setDouble(12, nation.approval);
@@ -50,7 +52,7 @@ public class NationDAO {
         var keys = statement.getGeneratedKeys();
         keys.next();
         nation.id = keys.getInt(1);
-        dataAccess.systemDAO.setOwner(nation.capital.star.system, nation);
+        dataAccess.starSystemDAO.setOwner(nation.capital.star.system, nation);
     }
 
     public List<Nation> getAll() throws SQLException {
@@ -88,6 +90,8 @@ public class NationDAO {
         }
         return result;
     }
+
+
 
     public Nation getById(int id) throws SQLException {
         if (id == readingId) {

@@ -48,14 +48,15 @@ CREATE TABLE IF NOT EXISTS planet(
 
 CREATE TABLE IF NOT EXISTS star_type(
     id IDENTITY NOT NULL PRIMARY KEY,
-    name VARCHAR(256)
+    name VARCHAR(256),
+    map_color int
 );
-    INSERT INTO star_type (name) VALUES ('O-Class Blue Giant');
-    INSERT INTO star_type (name) VALUES ('B-Class Blue Giant');
-    INSERT INTO star_type (name) VALUES ('A-Class White Star');
-    INSERT INTO star_type (name) VALUES ('F-Class Yellow-White Star');
-    INSERT INTO star_type (name) VALUES ('K-Class Orange Dwarf');
-    INSERT INTO star_type (name) VALUES ('M-Class Red Dwarf');
+INSERT INTO star_type (name, map_color) VALUES ('O-Class Blue Giant', 0x00FFFF);
+INSERT INTO star_type (name, map_color) VALUES ('B-Class Blue Giant', 0x0000FF);
+INSERT INTO star_type (name, map_color) VALUES ('A-Class White Star', 0xFFFFFF);
+INSERT INTO star_type (name, map_color) VALUES ('F-Class Yellow-White Star', 0xFFFF00);
+INSERT INTO star_type (name, map_color) VALUES ('K-Class Orange Dwarf', 0xFFBF00);
+INSERT INTO star_type (name, map_color) VALUES ('M-Class Red Dwarf', 0xFF0000);
 
 CREATE TABLE IF NOT EXISTS nation (
     id IDENTITY NOT NULL PRIMARY KEY,

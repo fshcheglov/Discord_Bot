@@ -1,6 +1,7 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
 import com.fedor.cs34.discord.bot.DataAccess;
+import com.fedor.cs34.discord.bot.data.nation.Nation;
 import com.fedor.cs34.discord.bot.data.system.Planet;
 
 import java.sql.Connection;
@@ -82,5 +83,13 @@ public class PlanetDAO {
         readingInstance = result;
         result.star = dataAccess.starDAO.getById(resultSet.getInt("star"));
         return result;
+    }
+
+   public void setOwner(Planet planet, Nation nation) throws SQLException {
+        planet.star.system.owner = nation;
+        var statement = connection.prepareStatement("UPDATE planet SET owner = ? WHERE id = ? ");
+        statement.setInt(1, nation.id);
+        statement.setInt(2, planet.id);
+        statement.executeUpdate();
     }
 }
