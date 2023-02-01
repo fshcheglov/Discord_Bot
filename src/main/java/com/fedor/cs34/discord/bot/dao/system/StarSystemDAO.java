@@ -6,10 +6,7 @@ import com.fedor.cs34.discord.bot.data.system.Coordinates;
 import com.fedor.cs34.discord.bot.data.system.StarSystem;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +52,17 @@ public class StarSystemDAO {
     }
 
     public void insert(StarSystem system) throws SQLException {
-        var statement = connection.prepareStatement("insert into system2 (name, map_x, map_y) " +
-                        "values(?,?,?)",
-                Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement statement;
+        if (system.owner == null) {
+            statement = connection.prepareStatement("insert into system2 (name, map_x, map_y) " +
+                            "values(?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+        } else {
+            statement = connection.prepareStatement("insert into system2 (name, map_x, map_y, owner) " +
+                            "values(?,?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            statement.setInt(4, system.owner.id);
+        }
         statement.setString(1, system.name);
         statement.setInt(2, system.coordinates.x);
         statement.setInt(3, system.coordinates.y);
@@ -71,7 +76,6 @@ public class StarSystemDAO {
         var name = resultSet.getString("name");
         var id = resultSet.getInt("id");
         var coordinates = new Coordinates(resultSet.getInt("map_x"), resultSet.getInt("map_y"));
-
 
         var result = new StarSystem(coordinates, name, null, id);
         readingId = id;
@@ -101,4 +105,6 @@ public class StarSystemDAO {
         statement.setInt(2, starSystem.id);
         statement.executeUpdate();
     }
+
+
 }
