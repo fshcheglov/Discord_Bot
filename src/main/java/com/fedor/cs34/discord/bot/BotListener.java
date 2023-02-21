@@ -6,11 +6,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
 
 public class BotListener implements EventListener {
     private final DataAccess dataAccess;
-    State state = State.DEFAULT;
-    Planet planet;
+    HashMap<String, BotListenerDataStore> userData = new HashMap<>();
 
     public BotListener(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
@@ -18,11 +18,17 @@ public class BotListener implements EventListener {
 
     @Override
     public void onEvent(@Nonnull GenericEvent genericEvent) {
-        if (!(genericEvent instanceof MessageReceivedEvent event)) {
+        if (!(genericEvent instanceof MessageReceivedEvent event) || event.getAuthor().isBot()) {
             return;
         }
+
+        var userID = event.getAuthor().getId();
+        if (!userData.containsKey(userID)) {
+            userData.put(userID, new BotListenerDataStore(State.DEFAULT, null));
+        }
+
         var message = event.getMessage().getContentStripped();
-        if (state == State.DEFAULT) {
+        if (userData.get(userID).state == State.DEFAULT && message.startsWith("!")) {
             if (message.equals("!EmpireList")) {
                 event.getChannel().sendMessage(Bot.handleEmpireList(dataAccess).toString()).queue();
             }
@@ -41,30 +47,40 @@ public class BotListener implements EventListener {
 
             if (message.startsWith("!CreateNation")) {
                 event.getChannel().sendMessage(Bot.inputCapitalTemplate()).queue();
-                state = State.CREATEPLANET;
+                userData.replace(userID, new BotListenerDataStore(State.CREATEPLANET, userData.get(userID).capital));
             }
-        } else if (state == State.CREATEPLANET) {
+        }
+        else if (userData.get(userID).state == State.CREATEPLANET) {
             try {
                 var planet = Bot.handleCreatePlanet(dataAccess, message);
                 if (planet == null) {
                     event.getChannel().sendMessage("**Sorry, you didn't follow the template.**").queue();
+                    userData.replace(userID, new BotListenerDataStore(State.DEFAULT, null));
                 } else {
                     event.getChannel().sendMessage("Capital planet successfully created.\n").queue();
+                    event.getChannel().sendMessage(Bot.inputNationTemplate()).queue();
+                    userData.replace(userID, new BotListenerDataStore(State.CREATENATION, planet));
                 }
             } catch (Exception e) {
                 event.getChannel().sendMessage("**Sorry, you didn't follow the template.**").queue();
+                userData.replace(userID, new BotListenerDataStore(State.DEFAULT, userData.get(userID).capital));
             }
-            state = State.CREATENATION;
-        } else if (state == State.CREATENATION) {
+        }
+        else if (userData.get(userID).state == State.CREATENATION) {
             try {
-                var nation = Bot.handleCreateNation(dataAccess, message, event.getAuthor().getId(), planet);
+                var nation = Bot.handleCreateNation(dataAccess, message, userID, userData.get(userID).capital);
                 if (!nation) {
                     event.getChannel().sendMessage("**Sorry, you didn't follow the template.**").queue();
+                    userData.replace(userID, new BotListenerDataStore(State.DEFAULT, null));
+
                 } else {
                     event.getChannel().sendMessage("**Nation Registered**").queue();
+                userData.replace(userID, new BotListenerDataStore(State.DEFAULT, userData.get(userID).capital));
                 }
+
             } catch (Exception e) {
                 event.getChannel().sendMessage("**Sorry, you didn't follow the template.**").queue();
+                userData.replace(userID, new BotListenerDataStore(State.DEFAULT, userData.get(userID).capital));
             }
         }
 

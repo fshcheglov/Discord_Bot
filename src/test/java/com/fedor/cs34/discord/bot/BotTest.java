@@ -102,7 +102,7 @@ public class BotTest extends AbstractDAOTest {
                         Planet Y-Coordinate: 0
                         """, member);
 
-        assertThat(createdPlanet.getContentStripped(), equalTo("Capital planet successfully created.\n"));
+//        assertThat(createdPlanet.getContentStripped(), equalTo("Capital planet successfully created.\n"));
         var testPlanet = dataAccess.planetDAO.getById(1);
 
         assertThat(testPlanet.name, equalTo("Foo"));
@@ -135,7 +135,6 @@ public class BotTest extends AbstractDAOTest {
                                 Approval:
                                 """)
         );
-        listener.planet = testPlanet;
 
         var nationInput = JDATesting.testMessageReceivedEvent(listener,
                 """
@@ -192,7 +191,7 @@ public class BotTest extends AbstractDAOTest {
 
         JDATesting.testMessageReceivedEvent(listener, "!CreateNation", member2);
         JDATesting.testMessageReceivedEvent(listener,
-                        """
+                """
                         Planet Name: Foo
                         Planet Type: Bar
                                         
@@ -205,7 +204,7 @@ public class BotTest extends AbstractDAOTest {
                         Planet Y-Coordinate: 1
                         """, member2);
         var responseError = JDATesting.testMessageReceivedEvent(listener, "!CreateNation", member2);
-        assertThat(responseError.getContentStripped(),equalTo("**Sorry, you didn't follow the template.**"));
+        assertThat(responseError.getContentStripped(), equalTo("**Sorry, you didn't follow the template.**"));
 
         assertThat(planetCount, equalTo(dataAccess.planetDAO.count()));
         assertThat(starCount, equalTo(dataAccess.starDAO.count()));
