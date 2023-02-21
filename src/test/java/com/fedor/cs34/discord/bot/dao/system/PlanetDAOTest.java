@@ -1,10 +1,10 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
 import com.fedor.cs34.discord.bot.dao.AbstractDAOTest;
-import com.fedor.cs34.discord.bot.data.system.Coordinates;
-import com.fedor.cs34.discord.bot.data.system.Planet;
-import com.fedor.cs34.discord.bot.data.system.Star;
-import com.fedor.cs34.discord.bot.data.system.StarSystem;
+import com.fedor.cs34.discord.bot.util.data.system.Coordinates;
+import com.fedor.cs34.discord.bot.util.data.system.Planet;
+import com.fedor.cs34.discord.bot.util.data.system.Star;
+import com.fedor.cs34.discord.bot.util.data.system.StarSystem;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;

@@ -1,9 +1,9 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
 import com.fedor.cs34.discord.bot.DataAccess;
-import com.fedor.cs34.discord.bot.data.nation.Nation;
-import com.fedor.cs34.discord.bot.data.system.Coordinates;
-import com.fedor.cs34.discord.bot.data.system.StarSystem;
+import com.fedor.cs34.discord.bot.util.data.nation.Nation;
+import com.fedor.cs34.discord.bot.util.data.system.Coordinates;
+import com.fedor.cs34.discord.bot.util.data.system.StarSystem;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -106,5 +106,10 @@ public class StarSystemDAO {
         statement.executeUpdate();
     }
 
-
+    public int count() throws SQLException {
+        var statement = connection.prepareStatement("SELECT COUNT(*) AS total FROM system2");
+        var resultSet = statement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("total");
+    }
 }

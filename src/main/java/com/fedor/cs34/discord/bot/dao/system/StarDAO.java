@@ -1,9 +1,10 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
 import com.fedor.cs34.discord.bot.DataAccess;
-import com.fedor.cs34.discord.bot.data.system.Star;
-import com.fedor.cs34.discord.bot.data.system.StarSystem;
-import com.fedor.cs34.discord.bot.data.system.StarType;
+import com.fedor.cs34.discord.bot.util.data.system.Coordinates;
+import com.fedor.cs34.discord.bot.util.data.system.Star;
+import com.fedor.cs34.discord.bot.util.data.system.StarSystem;
+import com.fedor.cs34.discord.bot.util.data.system.StarType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -36,27 +37,31 @@ public class StarDAO {
         return result;
     }
 
-    private int count() throws SQLException {
-        var statement = connection.prepareStatement("SELECT COUNT (*) FROM star");
+    public int count() throws SQLException {
+        var statement = connection.prepareStatement("SELECT COUNT(*) AS total FROM star");
         var resultSet = statement.executeQuery();
-        int count = -1;
-        if (resultSet.next()) {
-            count = resultSet.getInt(1);
-        }
-        return count;
+        resultSet.next();
+        return resultSet.getInt("total");
     }
 
-    public Star random(int nationID) throws SQLException {
-        var randomID = 1 + new Random().nextInt(count());
+    public Star random(Coordinates coordinates) throws SQLException {
+        // StarType type, String name, StarSystem system, int resources, int id
 
-        var randomStar = getById(randomID);
-        randomStar.system.owner = dataAccess.nationDAO.getById(nationID);
+        var type = dataAccess.starTypeDAO.random();
+        var name = type.name.charAt(0) + "-" + coordinates.x + coordinates.y;
+        var randomSystem = new StarSystem(coordinates, name, null, 0);
+        var resources = new Random().nextInt(20);
+
+        var randomStar = new Star(type, name, randomSystem, resources, 0);
+
+        dataAccess.starSystemDAO.insert(randomSystem);
+        insert(randomStar);
 
         return randomStar;
     }
 
 
-    Star getById(int id) throws SQLException {
+    public Star getById(int id) throws SQLException {
         if (id == readingId) {
             return readingInstance;
         }

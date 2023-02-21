@@ -1,4 +1,4 @@
-package com.fedor.cs34.discord.bot.data;
+package com.fedor.cs34.discord.bot.util.data;
 
 import com.fedor.cs34.discord.bot.DataAccess;
 import com.fedor.cs34.discord.bot.dao.system.StarDAO;

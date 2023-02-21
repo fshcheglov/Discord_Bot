@@ -1,4 +1,4 @@
-package com.fedor.cs34.discord.bot.data.nation;
+package com.fedor.cs34.discord.bot.util.data.nation;
 
 //TODO Make EconomicType abstract and be extended by all existing economic types.
 public class EconomicType {
