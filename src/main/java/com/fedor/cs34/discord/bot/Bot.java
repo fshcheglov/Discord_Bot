@@ -1,15 +1,9 @@
 package com.fedor.cs34.discord.bot;
 
-import com.fedor.cs34.discord.bot.util.data.Map;
 import com.fedor.cs34.discord.bot.util.data.nation.*;
 import com.fedor.cs34.discord.bot.util.data.system.Coordinates;
 import com.fedor.cs34.discord.bot.util.data.system.Planet;
-import com.fedor.cs34.discord.bot.util.Images;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
-import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -33,90 +27,9 @@ public class Bot {
 
         var dataAccess = new DataAccess(connection);
 
-        EventWaiter waiter = new EventWaiter();
+        var listener = new BotListener(dataAccess);
         JDABuilder jda = JDABuilder.createDefault(arguments.discordToken);
-        jda.addEventListeners(waiter);
-        jda.addEventListeners((EventListener) event -> {
-            if (event instanceof MessageReceivedEvent) {
-                if (((MessageReceivedEvent) event).getAuthor().isBot()) {
-                    return;
-                }
-                var mentionedUsers = ((MessageReceivedEvent) event).getMessage().getMentions().getUsers();
-                String message = ((MessageReceivedEvent) event).getMessage().getContentStripped();
-                if (message.equals("!CreateNation")) {
-                    final Planet[] capital = {null};
-                    ((MessageReceivedEvent) event).getChannel().sendMessage(inputCapitalTemplate()).queue();
-                    waiter.waitForEvent(MessageReceivedEvent.class, e -> e.getAuthor().equals(((MessageReceivedEvent) event).getAuthor()) && e.getChannel().equals(((MessageReceivedEvent) event).getChannel()), e -> {
-                        //Create Planet
-                        var planetTemplate = e.getMessage();
-                        System.out.println(planetTemplate.getContentStripped());
-                        try {
-                            capital[0] = handleCreatePlanet(dataAccess, planetTemplate.getContentStripped());
-                            if (capital[0] == null) {
-                                planetTemplate.reply("**Sorry, you didn't follow the template.**").queue();
-                            } else {
-                                planetTemplate.reply("Capital planet successfully created.\n").queue();
-                                // Create Nation
-                                ((MessageReceivedEvent) event).getChannel().sendMessage(inputNationTemplate()).queue();
-                                waiter.waitForEvent(MessageReceivedEvent.class, f -> f.getAuthor().equals(((MessageReceivedEvent) event).getAuthor()) && f.getChannel().equals(((MessageReceivedEvent) event).getChannel()), f -> {
-                                    var nationTemplate = f.getMessage();
-                                    System.out.println(nationTemplate.getContentStripped());
-                                    try {
-                                        var id = nationTemplate.getAuthor().getId();
-                                        if (!handleCreateNation(dataAccess, nationTemplate.getContentStripped(), id, capital[0])) {
-                                            nationTemplate.reply("**Sorry, you didn't follow the template.**").queue();
-                                        } else {
-                                            nationTemplate.reply("**Nation Registered**").queue();
-                                        }
-                                    } catch (Exception ex) {
-                                        throw new RuntimeException(ex);
-                                    }
-                                }, 5, TimeUnit.MINUTES, () -> ((MessageReceivedEvent) event).getMessage().reply("Sorry, you took too long.").queue());
-
-                            }
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }, 5, TimeUnit.MINUTES, () -> ((MessageReceivedEvent) event).getMessage().reply("Sorry, you took too long.").queue());
-                }
-
-                if (message.equals("!EmpireList")) {
-                    StringBuffer builder = handleEmpireList(dataAccess);
-                    ((MessageReceivedEvent) event).getChannel().sendMessage(builder.toString()).queue();
-                }
-
-                if (message.contains("!EmpireInfo")) {
-                    if (mentionedUsers.size() > 0) {
-                        var id = mentionedUsers.get(0).getId();
-                        try {
-                            var nation = dataAccess.nationDAO.getByOwnerId(id);
-                            ((MessageReceivedEvent) event).getChannel().sendMessage(nation.getNationInfo()).queue();
-                        } catch (Exception e) {
-                            ((MessageReceivedEvent) event).getChannel().sendMessage("**No Owned Nations!**").queue();
-                        }
-                    }
-                }
-                if (message.equals("!map")) {
-                    try {
-                        var image = new Map(dataAccess).createNationMap();
-                        var bytes = Images.toByteArray(image, "png");
-                        ((MessageReceivedEvent) event).getMessage().replyFiles(FileUpload.fromData(bytes, "map.png")).queue();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                if (message.equals("!ResetDatabases")) {
-                    // Command for testing. Remove in final version.
-                    try {
-                        CreateDatabases.startDatabase(connection, "drop_databases.sql");
-                        CreateDatabases.startDatabase(connection, "interstellar_database.sql");
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
+        jda.addEventListeners(listener);
         jda.build();
     }
 
@@ -355,13 +268,11 @@ public class Bot {
             }
         }
 
-        Nation nation = new Nation(nationName, leader, government, economicType, species, population, stability, centralization, approval, capital, 0, ownerID);
-        nation.development = development;
-        dataAccess.nationDAO.insert(nation);
-        dataAccess.planetDAO.setOwner(capital, nation);
-        nation.development = development;
-        dataAccess.nationDAO.insert(nation);
         if (nationName != null && leader != null && government != null && economicType != null && species != null) {
+            Nation nation = new Nation(nationName, leader, government, economicType, species, population, stability, centralization, approval, capital, 0, ownerID);
+            nation.development = development;
+            dataAccess.nationDAO.insert(nation);
+            dataAccess.planetDAO.setOwner(capital, nation);
             dataAccess.connection.commit();
             return true;
         } else {
