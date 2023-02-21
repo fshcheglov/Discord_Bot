@@ -1,10 +1,10 @@
-package com.fedor.cs34.discord.bot.data.nation;
+package com.fedor.cs34.discord.bot.util.data.nation;
 
-public class Leader {
-    private int id;
+public class Species {
     private final String name;
+    private int id;
 
-    public Leader(int id, String name) {
+    public Species(int id, String name) {
         this.id = id;
         this.name = name;
     }

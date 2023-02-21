@@ -1,8 +1,8 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
 import com.fedor.cs34.discord.bot.DataAccess;
-import com.fedor.cs34.discord.bot.data.nation.Nation;
-import com.fedor.cs34.discord.bot.data.system.Planet;
+import com.fedor.cs34.discord.bot.util.data.nation.Nation;
+import com.fedor.cs34.discord.bot.util.data.system.Planet;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,6 +32,13 @@ public class PlanetDAO {
             result.add(createFromResultSet(resultSet));
         }
         return result;
+    }
+
+    public int count() throws SQLException {
+        var statement = connection.prepareStatement("SELECT COUNT(*) AS total FROM planet");
+        var resultSet = statement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("total");
     }
 
     public Planet getById(int id) throws SQLException {
@@ -85,11 +92,17 @@ public class PlanetDAO {
         return result;
     }
 
-   public void setOwner(Planet planet, Nation nation) throws SQLException {
-        planet.star.system.owner = nation;
+    public void setOwner(Planet planet, Nation nation) throws SQLException {
         var statement = connection.prepareStatement("UPDATE planet SET owner = ? WHERE id = ? ");
+        var statement2 = connection.prepareStatement("UPDATE system2 SET owner = ? WHERE id = ? ");
+
         statement.setInt(1, nation.id);
         statement.setInt(2, planet.id);
         statement.executeUpdate();
+
+        statement2.setInt(1, nation.id);
+        statement2.setInt(2, planet.star.system.id);
+        statement2.executeUpdate();
+
     }
 }

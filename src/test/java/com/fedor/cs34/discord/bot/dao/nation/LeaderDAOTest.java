@@ -1,7 +1,7 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
 import com.fedor.cs34.discord.bot.dao.AbstractDAOTest;
-import com.fedor.cs34.discord.bot.data.nation.Leader;
+import com.fedor.cs34.discord.bot.util.data.nation.Leader;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;

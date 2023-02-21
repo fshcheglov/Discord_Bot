@@ -1,7 +1,7 @@
 package com.fedor.cs34.discord.bot.dao.system;
 
 import com.fedor.cs34.discord.bot.DataAccess;
-import com.fedor.cs34.discord.bot.data.system.StarType;
+import com.fedor.cs34.discord.bot.util.data.system.StarType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

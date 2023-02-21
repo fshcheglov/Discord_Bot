@@ -1,8 +1,4 @@
-package com.fedor.cs34.discord.bot.data.system;
-
-import com.fedor.cs34.discord.bot.data.nation.Nation;
-
-import javax.annotation.Nullable;
+package com.fedor.cs34.discord.bot.util.data.system;
 
 public class Planet {
     public int id;

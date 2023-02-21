@@ -1,7 +1,7 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
 import com.fedor.cs34.discord.bot.DataAccess;
-import com.fedor.cs34.discord.bot.data.nation.Nation;
+import com.fedor.cs34.discord.bot.util.data.nation.Nation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -91,7 +91,17 @@ public class NationDAO {
         return result;
     }
 
+    public Nation getByOwnerId(String id) throws SQLException {
+        var statement = connection.prepareStatement("SELECT * FROM nation WHERE ownerID LIKE ?");
+        statement.setString(1, id);
+        var resultSet = statement.executeQuery();
 
+        if (resultSet.next()) {
+            return createFromResultSet(resultSet);
+        } else {
+            throw new IllegalArgumentException("No nation with ID: " + id);
+        }
+    }
 
     public Nation getById(int id) throws SQLException {
         if (id == readingId) {

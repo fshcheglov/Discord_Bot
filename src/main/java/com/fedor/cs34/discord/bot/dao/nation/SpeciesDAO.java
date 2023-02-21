@@ -1,7 +1,7 @@
 package com.fedor.cs34.discord.bot.dao.nation;
 
 import com.fedor.cs34.discord.bot.DataAccess;
-import com.fedor.cs34.discord.bot.data.nation.Species;
+import com.fedor.cs34.discord.bot.util.data.nation.Species;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

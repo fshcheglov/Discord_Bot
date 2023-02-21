@@ -1,6 +1,6 @@
-package com.fedor.cs34.discord.bot.data.nation;
+package com.fedor.cs34.discord.bot.util.data.nation;
 
-import com.fedor.cs34.discord.bot.data.system.Planet;
+import com.fedor.cs34.discord.bot.util.data.system.Planet;
 
 public class Nation {
     public String nationName;
@@ -23,10 +23,10 @@ public class Nation {
     public int id;
     public String ownerID;
 
-    public Nation(String nationName, Leader leader, Government government, EconomicType economicType, Species species,
+    public Nation(String name, Leader leader, Government government, EconomicType economicType, Species species,
                   int population, double stability, double centralization, double approval, Planet capital,
                   int id, String ownerID) {
-        this.nationName = nationName;
+        this.nationName = name;
         this.leader = leader;
         this.government = government;
         this.economicType = economicType;
