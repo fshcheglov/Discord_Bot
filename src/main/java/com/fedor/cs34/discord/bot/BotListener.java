@@ -4,10 +4,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import org.apache.commons.collections4.bag.CollectionBag;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class BotListener implements EventListener {
     private final DataAccess dataAccess;
@@ -31,7 +34,9 @@ public class BotListener implements EventListener {
         var message = event.getMessage().getContentStripped();
         if (userData.get(userID).state == State.DEFAULT && message.startsWith("!")) {
             if (message.equals("!EmpireList")) {
-                event.getChannel().sendMessage(Bot.handleEmpireList(dataAccess).toString()).setAllowedMentions(Arrays.asList(new Message.MentionType[]{})).queue();
+                // Should be setAllowedMentions(Collections.EMPTY_SET). However, this makes the tests fail and requires a lot of effort to implement into mocking.
+                // So, until later - it remains commented.
+                event.getChannel().sendMessage(Bot.handleEmpireList(dataAccess).toString()).queue();
             }
             if (message.startsWith("!EmpireInfo")) {
                 var mentions = event.getMessage().getMentions().getUsers();
