@@ -9,13 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 public class Bot {
     public static void main(String[] args) throws Exception {
         var arguments = CommandLineArguments.parse(args);
-
         String jdbcURL = "jdbc:h2:" + arguments.databasePath;
         String username = "Vrell";
         String password = "1234";

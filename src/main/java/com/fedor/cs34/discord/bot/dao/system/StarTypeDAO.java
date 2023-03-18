@@ -40,7 +40,7 @@ public class StarTypeDAO {
         if (resultSet.next()) {
             return createFromResultSet(resultSet);
         } else {
-            throw new IllegalArgumentException("No star type type with ID: " + id);
+            throw new IllegalArgumentException("No star type with ID: " + id);
         }
     }
 

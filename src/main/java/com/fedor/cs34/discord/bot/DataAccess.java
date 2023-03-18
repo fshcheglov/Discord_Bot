@@ -19,6 +19,8 @@ public class DataAccess {
     public final StarDAO starDAO;
     public final StarTypeDAO starTypeDAO;
     public final StarSystemDAO starSystemDAO;
+    public final ModifierDAO modifierDAO;
+    public final NationModifierTypeDAO nationModifierTypeDAO;
 
 
     public DataAccess(Connection connection) {
@@ -32,5 +34,7 @@ public class DataAccess {
         this.starDAO = new StarDAO(this);
         this.starTypeDAO = new StarTypeDAO(this);
         this.starSystemDAO = new StarSystemDAO(this);
+        this.modifierDAO = new ModifierDAO(this);
+        this.nationModifierTypeDAO = new NationModifierTypeDAO(this);
     }
 }

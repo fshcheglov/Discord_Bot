@@ -20,4 +20,10 @@ public class Leader {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        var leader = (Leader) obj;
+        return getName().equals(name) && leader.getId() == id;
+    }
 }

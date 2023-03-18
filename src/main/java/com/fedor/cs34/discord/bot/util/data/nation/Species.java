@@ -20,4 +20,10 @@ public class Species {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        var species = (Species) obj;
+        return species.getId() == id && species.getName().equals(getName());
+    }
 }
