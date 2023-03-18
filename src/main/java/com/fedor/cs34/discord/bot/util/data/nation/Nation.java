@@ -65,5 +65,4 @@ public class Nation {
     public String returnNameAndOwner() {
         return ("**Nation name:** " + nationName + " | **Owner:** <@" + ownerID + ">\n");
     }
-
 }

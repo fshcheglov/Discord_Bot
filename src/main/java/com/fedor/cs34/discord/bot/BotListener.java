@@ -1,16 +1,17 @@
 package com.fedor.cs34.discord.bot;
 
-import com.fedor.cs34.discord.bot.util.data.system.Planet;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class BotListener implements EventListener {
     private final DataAccess dataAccess;
-    HashMap<String, BotListenerDataStore> userData = new HashMap<>();
+    private final HashMap<String, BotListenerDataStore> userData = new HashMap<>();
 
     public BotListener(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
@@ -30,7 +31,7 @@ public class BotListener implements EventListener {
         var message = event.getMessage().getContentStripped();
         if (userData.get(userID).state == State.DEFAULT && message.startsWith("!")) {
             if (message.equals("!EmpireList")) {
-                event.getChannel().sendMessage(Bot.handleEmpireList(dataAccess).toString()).queue();
+                event.getChannel().sendMessage(Bot.handleEmpireList(dataAccess).toString()).setAllowedMentions(Arrays.asList(new Message.MentionType[]{})).queue();
             }
             if (message.startsWith("!EmpireInfo")) {
                 var mentions = event.getMessage().getMentions().getUsers();
@@ -49,8 +50,7 @@ public class BotListener implements EventListener {
                 event.getChannel().sendMessage(Bot.inputCapitalTemplate()).queue();
                 userData.replace(userID, new BotListenerDataStore(State.CREATEPLANET, userData.get(userID).capital));
             }
-        }
-        else if (userData.get(userID).state == State.CREATEPLANET) {
+        } else if (userData.get(userID).state == State.CREATEPLANET) {
             try {
                 var planet = Bot.handleCreatePlanet(dataAccess, message);
                 if (planet == null) {
@@ -65,8 +65,7 @@ public class BotListener implements EventListener {
                 event.getChannel().sendMessage("**Sorry, you didn't follow the template.**").queue();
                 userData.replace(userID, new BotListenerDataStore(State.DEFAULT, userData.get(userID).capital));
             }
-        }
-        else if (userData.get(userID).state == State.CREATENATION) {
+        } else if (userData.get(userID).state == State.CREATENATION) {
             try {
                 var nation = Bot.handleCreateNation(dataAccess, message, userID, userData.get(userID).capital);
                 if (!nation) {
@@ -75,7 +74,7 @@ public class BotListener implements EventListener {
 
                 } else {
                     event.getChannel().sendMessage("**Nation Registered**").queue();
-                userData.replace(userID, new BotListenerDataStore(State.DEFAULT, userData.get(userID).capital));
+                    userData.replace(userID, new BotListenerDataStore(State.DEFAULT, userData.get(userID).capital));
                 }
 
             } catch (Exception e) {

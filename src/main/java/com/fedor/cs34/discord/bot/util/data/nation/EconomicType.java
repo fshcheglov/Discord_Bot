@@ -25,4 +25,5 @@ public class EconomicType {
     public String getName() {
         return name;
     }
+
 }

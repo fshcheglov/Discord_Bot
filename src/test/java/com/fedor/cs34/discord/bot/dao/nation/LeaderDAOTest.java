@@ -14,8 +14,10 @@ public class LeaderDAOTest extends AbstractDAOTest {
     @Test
     void insert() throws SQLException {
         var name = "Foo Bar";
-        dataAccess.leaderDAO.insert(new Leader(-1, name));
+        var leaderToInsert = new Leader(-1, name);
+        dataAccess.leaderDAO.insert(leaderToInsert);
         var leader = dataAccess.leaderDAO.getById(1);
+        assertThat(leader, not(sameInstance(leaderToInsert)));
         assertThat(leader.getId(), equalTo(1));
         assertThat(leader.getName(), equalTo(name));
     }

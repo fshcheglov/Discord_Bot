@@ -102,7 +102,25 @@ public class BotTest extends AbstractDAOTest {
                         Planet Y-Coordinate: 0
                         """, member);
 
-//        assertThat(createdPlanet.getContentStripped(), equalTo("Capital planet successfully created.\n"));
+        assertThat(createdPlanet.getContentStripped(), equalTo("Please input nation details according to the following template:\n" +
+                """
+                        Nation Name:
+                        Leader Name:
+                        Species:
+
+                        Government Type:
+                        Economic System:
+
+                        Resource Points:
+                        Economic Points:
+                        Manpower Points:
+
+                        Population:
+
+                        Stability:
+                        Centralization:
+                        Approval:
+                        """));
         var testPlanet = dataAccess.planetDAO.getById(1);
 
         assertThat(testPlanet.name, equalTo("Foo"));

@@ -8,10 +8,22 @@ CREATE TABLE IF NOT EXISTS leader (
     name VARCHAR(256)
 );
 
+CREATE TABLE IF NOT EXISTS modifier_type (
+    id IDENTITY NOT NULL PRIMARY KEY,
+    type VARCHAR(256)
+);
+
+INSERT INTO modifier_type (type) VALUES ('Population');
+INSERT INTO modifier_type (type) VALUES ('Resource Points');
+INSERT INTO modifier_type (type) VALUES ('Manpower Points');
+INSERT INTO modifier_type (type) VALUES ('Economic Points');
+
+
 CREATE TABLE IF NOT EXISTS government (
     id IDENTITY NOT NULL PRIMARY KEY,
     name VARCHAR(256)
 );
+
 INSERT INTO government (name) VALUES ('Oligarchic Democracy');
 INSERT INTO government (name) VALUES ('Military Junta');
 INSERT INTO government (name) VALUES ('Authoritarian Dictatorship');
@@ -80,6 +92,19 @@ CREATE TABLE IF NOT EXISTS nation (
     FOREIGN KEY (economic_type) REFERENCES economy(id),
     FOREIGN KEY (primary_species) REFERENCES species(id),
     FOREIGN KEY (capital) REFERENCES planet(id)
+);
+
+CREATE TABLE IF NOT EXISTS modifier (
+    id IDENTITY NOT NULL PRIMARY KEY,
+    name VARCHAR(256),
+    is_flat int,
+    type int,
+    modifier_value double,
+    duration int,
+    nation int,
+
+    FOREIGN KEY (type) REFERENCES modifier_type(id),
+    FOREIGN KEY (nation) REFERENCES nation(id)
 );
 
 CREATE TABLE IF NOT EXISTS system2(

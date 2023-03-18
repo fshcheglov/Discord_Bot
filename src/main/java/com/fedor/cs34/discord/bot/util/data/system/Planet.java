@@ -22,4 +22,5 @@ public class Planet {
         this.id = id;
         this.isHabitable = isHabitable;
     }
+
 }
