@@ -1,16 +1,15 @@
 package com.fedor.cs34.discord.bot;
 
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
-import org.apache.commons.collections4.bag.CollectionBag;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.Collections;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 public class BotListener implements EventListener {
     private final DataAccess dataAccess;
@@ -55,6 +54,27 @@ public class BotListener implements EventListener {
                 event.getChannel().sendMessage(Bot.inputCapitalTemplate()).queue();
                 userData.replace(userID, new BotListenerDataStore(State.CREATEPLANET, userData.get(userID).capital));
             }
+
+            if (message.startsWith("!GenerateMap")) {
+                File outputFile = new File("image.jpg");
+                try {
+                    ImageIO.write(Bot.handleMapCreation(dataAccess), "jpg", outputFile);
+                    event.getChannel().sendMessage("Galaxy map generated.").addFiles(FileUpload.fromData(outputFile));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if (message.startsWith("!ShowMap")) {
+                File outputFile = new File("image.jpg");
+                try {
+                    ImageIO.write(Bot.handleDisplayMap(dataAccess), "jpg", outputFile);
+                    event.getChannel().sendMessage("").addFiles(FileUpload.fromData(outputFile));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
         } else if (userData.get(userID).state == State.CREATEPLANET) {
             try {
                 var planet = Bot.handleCreatePlanet(dataAccess, message);

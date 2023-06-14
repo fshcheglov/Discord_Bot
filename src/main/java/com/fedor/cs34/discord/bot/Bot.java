@@ -1,11 +1,13 @@
 package com.fedor.cs34.discord.bot;
 
+import com.fedor.cs34.discord.bot.util.data.Map;
 import com.fedor.cs34.discord.bot.util.data.nation.*;
 import com.fedor.cs34.discord.bot.util.data.system.Coordinates;
 import com.fedor.cs34.discord.bot.util.data.system.Planet;
 import net.dv8tion.jda.api.JDABuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -276,6 +278,23 @@ public class Bot {
         } else {
             dataAccess.connection.rollback();
             return false;
+        }
+    }
+
+    public static BufferedImage handleMapCreation(DataAccess access)  {
+        var galaxyMap = new Map(access);
+        try {
+            return galaxyMap.generateGalaxyMap();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static BufferedImage handleDisplayMap(DataAccess access)  {
+        var galaxyMap = new Map(access);
+        try {
+            return galaxyMap.displayGalaxyMap();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

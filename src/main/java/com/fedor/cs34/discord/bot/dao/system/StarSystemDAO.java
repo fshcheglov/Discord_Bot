@@ -51,6 +51,19 @@ public class StarSystemDAO {
         }
     }
 
+    public StarSystem getByCoordinates(Coordinates coordinates) throws SQLException {
+        var statement = connection.prepareStatement("SELECT * FROM system2 WHERE map_x = ? AND map_y = ?");
+        statement.setInt(1, coordinates.x);
+        statement.setInt(2, coordinates.y);
+        var resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return createFromResultSet(resultSet);
+        } else {
+            return null;
+        }
+    }
+
     public void insert(StarSystem system) throws SQLException {
         PreparedStatement statement;
         if (system.owner == null) {
