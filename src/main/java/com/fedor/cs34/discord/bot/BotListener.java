@@ -65,6 +65,7 @@ public class BotListener implements EventListener {
                 }
             }
 
+            // This is used to mantain the same map consistently. When the bot is able to distinguish between users (admin/non admin) commands will be restricted accordingly.
             if (message.startsWith("!ShowMap")) {
                 File outputFile = new File("image.jpg");
                 try {
